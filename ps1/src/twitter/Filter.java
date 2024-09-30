@@ -1,18 +1,8 @@
-/* Copyright (c) 2007-2016 MIT 6.005 course staff, all rights reserved.
- * Redistribution of original or derived work requires permission of course staff.
- */
 package twitter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * Filter consists of methods that filter a list of tweets for those matching a
- * condition.
- * 
- * DO NOT change the method signatures and specifications of these methods, but
- * you should implement their method bodies, and you may add new public or
- * private methods or classes if you like.
- */
 public class Filter {
 
     /**
@@ -27,7 +17,9 @@ public class Filter {
      *         in the same order as in the input list.
      */
     public static List<Tweet> writtenBy(List<Tweet> tweets, String username) {
-        throw new RuntimeException("not implemented");
+        return tweets.stream()
+                     .filter(tweet -> tweet.getAuthor().equalsIgnoreCase(username))
+                     .collect(Collectors.toList());  // Use Collectors.toList() for Java 8+ compatibility
     }
 
     /**
@@ -41,7 +33,10 @@ public class Filter {
      *         in the same order as in the input list.
      */
     public static List<Tweet> inTimespan(List<Tweet> tweets, Timespan timespan) {
-        throw new RuntimeException("not implemented");
+        return tweets.stream()
+                     .filter(tweet -> !tweet.getTimestamp().isBefore(timespan.getStart()) 
+                                   && !tweet.getTimestamp().isAfter(timespan.getEnd()))
+                     .collect(Collectors.toList());  // Use Collectors.toList() for Java 8+ compatibility
     }
 
     /**
@@ -60,7 +55,15 @@ public class Filter {
      *         same order as in the input list.
      */
     public static List<Tweet> containing(List<Tweet> tweets, List<String> words) {
-        throw new RuntimeException("not implemented");
+        List<String> lowerCaseWords = words.stream()
+                                           .map(String::toLowerCase)
+                                           .collect(Collectors.toList());  // Use Collectors.toList() for Java 8+ compatibility
+        return tweets.stream()
+                     .filter(tweet -> {
+                         String tweetText = tweet.getText().toLowerCase();
+                         return lowerCaseWords.stream().anyMatch(tweetText::contains);
+                     })
+                     .collect(Collectors.toList());  // Use Collectors.toList() for Java 8+ compatibility
     }
 
 }
